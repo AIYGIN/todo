@@ -6,16 +6,18 @@
  * OpenAPI spec version: 1.0
  */
 import type { EnterpriseQuantInfoDto } from './enterpriseQuantInfoDto';
+import type { GetEnterpriseQuantsInfoResponseDtoOrder } from './getEnterpriseQuantsInfoResponseDtoOrder';
+import type { GetEnterpriseQuantsInfoResponseDtoSort } from './getEnterpriseQuantsInfoResponseDtoSort';
 
 export interface GetEnterpriseQuantsInfoResponseDto {
-  /** 企業別クオンツ情報一覧 */
-  enterprises: EnterpriseQuantInfoDto[];
-  /** レスポンス更新日時 */
-  updatedAt: string;
+  /** スコアリングバージョン */
+  scoreVersion: string;
   /** データ基準日 */
-  dataAsOfDate: string;
-  /** リアルタイムデータかどうか */
-  isRealtime: boolean;
-  /** 利用上の注意 */
-  disclaimers: string[];
+  asOf: string;
+  /** 並び替え項目 */
+  sort: GetEnterpriseQuantsInfoResponseDtoSort;
+  /** 並び順 */
+  order: GetEnterpriseQuantsInfoResponseDtoOrder;
+  /** 高配当候補一覧 */
+  items: EnterpriseQuantInfoDto[];
 }

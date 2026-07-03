@@ -5,43 +5,72 @@
  * Frontend 向け BFF API
  * OpenAPI spec version: 1.0
  */
-import type { EnterpriseQuantInfoDtoSafetyLabel } from './enterpriseQuantInfoDtoSafetyLabel';
-import type { EnterpriseScoreBreakdownDto } from './enterpriseScoreBreakdownDto';
+import type { EnterpriseQuantInfoDtoEquityRatio } from './enterpriseQuantInfoDtoEquityRatio';
+import type { EnterpriseQuantInfoDtoFreeCashFlowStatus } from './enterpriseQuantInfoDtoFreeCashFlowStatus';
+import type { EnterpriseQuantInfoDtoMarket } from './enterpriseQuantInfoDtoMarket';
+import type { EnterpriseQuantInfoDtoPayoutRatio } from './enterpriseQuantInfoDtoPayoutRatio';
+import type { EnterpriseQuantInfoDtoPbr } from './enterpriseQuantInfoDtoPbr';
+import type { EnterpriseQuantInfoDtoPer } from './enterpriseQuantInfoDtoPer';
+import type { EnterpriseQuantInfoDtoRoe } from './enterpriseQuantInfoDtoRoe';
+import type { EnterpriseQuantInfoDtoSector } from './enterpriseQuantInfoDtoSector';
 
 export interface EnterpriseQuantInfoDto {
+  /**
+     * 上位候補順位
+     * @minimum 1
+     */
+  rank: number;
   /** 銘柄コード */
   symbolId: string;
   /** 企業名 */
   companyName: string;
-  /** 業種 */
-  sector: string;
   /**
-     * スコア順位
-     * @minimum 1
+     * 市場区分
+     * @nullable
      */
-  rank: number;
+  market?: EnterpriseQuantInfoDtoMarket;
   /**
-     * 総合スコア
+     * 業種
+     * @nullable
+     */
+  sector?: EnterpriseQuantInfoDtoSector;
+  /**
+     * 配当スコア
      * @minimum 0
+     * @maximum 100
      */
-  totalScore: number;
-  /** 配当持続性の判定 */
-  judgement: string;
-  /** 配当持続性ラベル */
-  safetyLabel: EnterpriseQuantInfoDtoSafetyLabel;
-  /** スコア内訳 */
-  scoreBreakdown: EnterpriseScoreBreakdownDto;
+  dividendScore: number;
+  /** 配当利回り */
+  dividendYield: number;
   /**
-     * 直近配当利回り
-     * @minimum 0
+     * 配当性向
+     * @nullable
      */
-  latestDividendYield: number;
-  /** 金融業かどうか */
-  isFinancialBusiness: boolean;
-  /** FCF 評価対象外かどうか */
-  isFcfNotApplicable: boolean;
-  /** データ更新日時 */
-  updatedAt: string;
-  /** データ基準日 */
-  dataAsOfDate: string;
+  payoutRatio?: EnterpriseQuantInfoDtoPayoutRatio;
+  /**
+     * PER
+     * @nullable
+     */
+  per?: EnterpriseQuantInfoDtoPer;
+  /**
+     * PBR
+     * @nullable
+     */
+  pbr?: EnterpriseQuantInfoDtoPbr;
+  /**
+     * ROE
+     * @nullable
+     */
+  roe?: EnterpriseQuantInfoDtoRoe;
+  /**
+     * 自己資本比率
+     * @nullable
+     */
+  equityRatio?: EnterpriseQuantInfoDtoEquityRatio;
+  /** フリーキャッシュフローの扱い */
+  freeCashFlowStatus: EnterpriseQuantInfoDtoFreeCashFlowStatus;
+  /** 欠損フィールド */
+  missingFields: string[];
+  /** 警告コード */
+  warnings: string[];
 }

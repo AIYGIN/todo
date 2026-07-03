@@ -36,13 +36,6 @@ export function DividendAnalysisTable({
               "セクター",
               "配当安全性スコア\n(100点満点)",
               "判定",
-              "FCF\n(30点)",
-              "減配履歴\n(20点)",
-              "増配率\n(15点)",
-              "配当性向\n(15点)",
-              "利回り\n(10点)",
-              "財務指標\n(10点)",
-              "利回り\n(直近)",
             ].map((header) => (
               <th className={headerCellClass} key={header} scope="col">
                 {header.split("\n").map((line) => (
@@ -98,39 +91,6 @@ export function DividendAnalysisTable({
                     {enterprise.judgement}
                   </StatusBadge>
                 </td>
-                <ScoreCell
-                  maxScore={enterprise.scoreBreakdown.fcf.maxScore}
-                  score={
-                    enterprise.isFcfNotApplicable
-                      ? null
-                      : enterprise.scoreBreakdown.fcf.score
-                  }
-                />
-                <ScoreCell
-                  maxScore={
-                    enterprise.scoreBreakdown.dividendCutHistory.maxScore
-                  }
-                  score={enterprise.scoreBreakdown.dividendCutHistory.score}
-                />
-                <ScoreCell
-                  maxScore={enterprise.scoreBreakdown.dividendGrowth.maxScore}
-                  score={enterprise.scoreBreakdown.dividendGrowth.score}
-                />
-                <ScoreCell
-                  maxScore={enterprise.scoreBreakdown.dividendYield.maxScore}
-                  score={enterprise.scoreBreakdown.dividendYield.score}
-                />
-                <ScoreCell
-                  maxScore={enterprise.scoreBreakdown.payoutRatio.maxScore}
-                  score={enterprise.scoreBreakdown.payoutRatio.score}
-                />
-                <ScoreCell
-                  maxScore={enterprise.scoreBreakdown.financialMetrics.maxScore}
-                  score={enterprise.scoreBreakdown.financialMetrics.score}
-                />
-                <td className={yieldCellClass}>
-                  {formatNumber(enterprise.latestDividendYield)}%
-                </td>
               </tr>
             );
           })}
@@ -172,23 +132,6 @@ function LogoMark({ enterprise }: { enterprise: DividendEnterprise }) {
   );
 }
 
-function ScoreCell({
-  maxScore,
-  score,
-}: {
-  maxScore: number;
-  score: number | null;
-}) {
-  const tone = score === null ? "neutral" : getMetricTone(score, maxScore);
-
-  return (
-    <td className={cx(bodyCellClass, toneTextClass[tone])}>
-      <strong>{score === null ? "N/A" : formatNumber(score)}</strong>
-      <span className={scoreMaxClass}>/{maxScore}</span>
-    </td>
-  );
-}
-
 function ScoreBar({ score, tone }: { score: number; tone: InvestmentTone }) {
   const token = toneTokens[tone];
   const pct = Math.max(0, Math.min(100, score));
@@ -219,7 +162,7 @@ const tableClass = css({
   borderSpacing: 0,
   color: "investment-text",
   fontSize: "sm",
-  minW: "1420px",
+  minW: "760px",
   w: "full",
 });
 
@@ -396,17 +339,6 @@ const scoreCellClass = cx(
   css({ minW: "170px", textAlign: "left" }),
 );
 const badgeCellClass = cx(bodyCellClass, css({ minW: "120px" }));
-const yieldCellClass = cx(
-  bodyCellClass,
-  css({ color: "investment-text", fontWeight: "900" }),
-);
-
-const scoreMaxClass = css({
-  color: "currentColor",
-  fontSize: "xs",
-  fontWeight: "800",
-  ml: "0.5",
-});
 
 const progressTrackClass = css({
   bg: "#e9eef6",
@@ -422,27 +354,11 @@ const progressFillClass = css({
   h: "full",
 });
 
-const toneTextClass: Record<InvestmentTone, string> = {
-  safe: css({ color: "investment-green" }),
-  good: css({ color: "investment-green" }),
-  watch: css({ color: "investment-orange" }),
-  warning: css({ color: "investment-orange" }),
-  danger: css({ color: "investment-red" }),
-  neutral: css({ color: "investment-muted" }),
-};
-
 function formatNumber(value: number) {
   return new Intl.NumberFormat("ja-JP", {
     maximumFractionDigits: 1,
     minimumFractionDigits: Number.isInteger(value) ? 0 : 1,
   }).format(value);
-}
-
-function getMetricTone(score: number, maxScore: number): InvestmentTone {
-  const ratio = maxScore > 0 ? score / maxScore : 0;
-  if (ratio >= 0.75) return "safe";
-  if (ratio >= 0.5) return "warning";
-  return "danger";
 }
 
 function getLogoKind(symbolId: string) {

@@ -5,50 +5,35 @@
  * Frontend 向け BFF API
  * OpenAPI spec version: 1.0
  */
-import type { EnterpriseDividendAnalysisDataSourceDto } from './enterpriseDividendAnalysisDataSourceDto';
+import type { EnterpriseDividendAnalysisCommentaryDto } from './enterpriseDividendAnalysisCommentaryDto';
 import type { EnterpriseDividendAnalysisMetricsDto } from './enterpriseDividendAnalysisMetricsDto';
-import type { EnterpriseDividendAnalysisScoreBreakdownDto } from './enterpriseDividendAnalysisScoreBreakdownDto';
-import type { GetEnterpriseDividendAnalysisResponseDtoSafetyLabel } from './getEnterpriseDividendAnalysisResponseDtoSafetyLabel';
 
 export interface GetEnterpriseDividendAnalysisResponseDto {
   /** 銘柄コード */
   symbolId: string;
   /** 企業名 */
   companyName: string;
-  /** 業種 */
-  sector: string;
-  /**
-     * 総合スコア
-     * @minimum 0
-     */
-  totalScore: number;
-  /** 配当持続性の判定 */
-  judgement: string;
-  /** 配当持続性ラベル */
-  safetyLabel: GetEnterpriseDividendAnalysisResponseDtoSafetyLabel;
-  /** 分析指標 */
-  metrics: EnterpriseDividendAnalysisMetricsDto;
-  /** スコア内訳 */
-  scoreBreakdown: EnterpriseDividendAnalysisScoreBreakdownDto;
-  /**
-     * 分析サマリー。v1 では null
-     * @nullable
-     */
-  analysisSummary: string | null;
-  /** 金融業かどうか */
-  isFinancialBusiness: boolean;
-  /** FCF 評価対象外かどうか */
-  isFcfNotApplicable: boolean;
-  /** データソース */
-  dataSources: EnterpriseDividendAnalysisDataSourceDto[];
-  /** データ更新日時 */
-  updatedAt: string;
-  /** データ基準日 */
-  dataAsOfDate: string;
   /** スコアリングバージョン */
   scoreVersion: string;
-  /** リアルタイムデータかどうか */
-  isRealtime: boolean;
-  /** 利用上の注意 */
-  disclaimers: string[];
+  /** データ基準日 */
+  asOf: string;
+  /**
+     * 上位候補順位
+     * @minimum 1
+     */
+  rank: number;
+  /**
+     * 配当スコア
+     * @minimum 0
+     * @maximum 100
+     */
+  dividendScore: number;
+  /** 分析指標 */
+  metrics: EnterpriseDividendAnalysisMetricsDto;
+  /** 分析コメント */
+  analysis: EnterpriseDividendAnalysisCommentaryDto;
+  /** 欠損フィールド */
+  missingFields: string[];
+  /** 警告コード */
+  warnings: string[];
 }

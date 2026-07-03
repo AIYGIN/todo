@@ -5,26 +5,47 @@
  * Frontend 向け BFF API
  * OpenAPI spec version: 1.0
  */
+import type { EnterpriseDividendAnalysisMetricsDtoEquityRatio } from './enterpriseDividendAnalysisMetricsDtoEquityRatio';
+import type { EnterpriseDividendAnalysisMetricsDtoFreeCashFlow } from './enterpriseDividendAnalysisMetricsDtoFreeCashFlow';
+import type { EnterpriseDividendAnalysisMetricsDtoFreeCashFlowStatus } from './enterpriseDividendAnalysisMetricsDtoFreeCashFlowStatus';
+import type { EnterpriseDividendAnalysisMetricsDtoPayoutRatio } from './enterpriseDividendAnalysisMetricsDtoPayoutRatio';
+import type { EnterpriseDividendAnalysisMetricsDtoPbr } from './enterpriseDividendAnalysisMetricsDtoPbr';
+import type { EnterpriseDividendAnalysisMetricsDtoPer } from './enterpriseDividendAnalysisMetricsDtoPer';
+import type { EnterpriseDividendAnalysisMetricsDtoRoe } from './enterpriseDividendAnalysisMetricsDtoRoe';
 
 export interface EnterpriseDividendAnalysisMetricsDto {
+  /** 配当利回り */
+  dividendYield: number;
   /**
-     * フリーキャッシュフロー。金融業では null
+     * 配当性向
      * @nullable
      */
-  fcf: number | null;
-  /** 配当性向 */
-  payoutRatio: number;
-  /** 10年配当成長率 */
-  dividendGrowthRate10y: number;
+  payoutRatio?: EnterpriseDividendAnalysisMetricsDtoPayoutRatio;
   /**
-     * 10年減配回数
-     * @minimum 0
+     * PER
+     * @nullable
      */
-  dividendCutCount10y: number;
-  /** PER */
-  per: number;
-  /** PBR */
-  pbr: number;
-  /** ROE */
-  roe: number;
+  per?: EnterpriseDividendAnalysisMetricsDtoPer;
+  /**
+     * PBR
+     * @nullable
+     */
+  pbr?: EnterpriseDividendAnalysisMetricsDtoPbr;
+  /**
+     * ROE
+     * @nullable
+     */
+  roe?: EnterpriseDividendAnalysisMetricsDtoRoe;
+  /**
+     * 自己資本比率
+     * @nullable
+     */
+  equityRatio?: EnterpriseDividendAnalysisMetricsDtoEquityRatio;
+  /**
+     * フリーキャッシュフロー
+     * @nullable
+     */
+  freeCashFlow?: EnterpriseDividendAnalysisMetricsDtoFreeCashFlow;
+  /** フリーキャッシュフローの扱い */
+  freeCashFlowStatus: EnterpriseDividendAnalysisMetricsDtoFreeCashFlowStatus;
 }
