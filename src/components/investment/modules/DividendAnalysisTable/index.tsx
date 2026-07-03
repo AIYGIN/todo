@@ -1,6 +1,5 @@
 "use client";
 
-import { StatusBadge } from "@/components/investment";
 import type { DividendEnterprise } from "@/hooks/dividendAnalysis";
 
 import { css, cx } from "../../../../../styled-system/css";
@@ -30,21 +29,17 @@ export function DividendAnalysisTable({
       <table className={tableClass}>
         <thead>
           <tr>
-            {[
-              "順位",
-              "銘柄",
-              "セクター",
-              "配当安全性スコア\n(100点満点)",
-              "判定",
-            ].map((header) => (
-              <th className={headerCellClass} key={header} scope="col">
-                {header.split("\n").map((line) => (
-                  <span className={css({ display: "block" })} key={line}>
-                    {line}
-                  </span>
-                ))}
-              </th>
-            ))}
+            {["順位", "銘柄", "セクター", "配当安全性スコア\n(100点満点)"].map(
+              (header) => (
+                <th className={headerCellClass} key={header} scope="col">
+                  {header.split("\n").map((line) => (
+                    <span className={css({ display: "block" })} key={line}>
+                      {line}
+                    </span>
+                  ))}
+                </th>
+              ),
+            )}
           </tr>
         </thead>
         <tbody>
@@ -85,11 +80,6 @@ export function DividendAnalysisTable({
                 <td className={bodyCellClass}>{enterprise.sector}</td>
                 <td className={scoreCellClass}>
                   <ScoreBar score={enterprise.totalScore} tone={tone} />
-                </td>
-                <td className={badgeCellClass}>
-                  <StatusBadge tone={toTone(enterprise.safetyLabel)}>
-                    {enterprise.judgement}
-                  </StatusBadge>
                 </td>
               </tr>
             );
@@ -338,7 +328,6 @@ const scoreCellClass = cx(
   bodyCellClass,
   css({ minW: "170px", textAlign: "left" }),
 );
-const badgeCellClass = cx(bodyCellClass, css({ minW: "120px" }));
 
 const progressTrackClass = css({
   bg: "#e9eef6",
@@ -367,16 +356,4 @@ function getLogoKind(symbolId: string) {
   if (symbolId === "8306") return "mufg";
   if (symbolId === "2914") return "jt";
   return "text";
-}
-
-function toTone(label: DividendEnterprise["safetyLabel"]) {
-  if (label === "safe") {
-    return "safe";
-  }
-
-  if (label === "neutral") {
-    return "watch";
-  }
-
-  return "danger";
 }

@@ -529,7 +529,7 @@ describe("DividendAnalysisPage", () => {
 
     expect
       .soft(within(row as HTMLTableRowElement).getAllByRole("cell"))
-      .toHaveLength(5);
+      .toHaveLength(4);
   });
 
   it("指標詳細テーブルはmetricsとscoreBreakdownから配点、評価、得点、詳細を表示する", () => {
@@ -569,14 +569,18 @@ describe("DividendAnalysisPage", () => {
     });
 
     expect(within(payoutRatioCard).getByText("15点")).toBeInTheDocument();
-    expect(within(payoutRatioCard).getByText(/4\s*\/\s*15/)).toBeInTheDocument();
+    expect(
+      within(payoutRatioCard).getByText(/4\s*\/\s*15/),
+    ).toBeInTheDocument();
     expect(
       within(payoutRatioCard).getByText(/配当性向スコアを表示します/),
     ).toBeInTheDocument();
     expect(within(payoutRatioCard).getByText("得点")).toBeInTheDocument();
 
     expect(within(dividendYieldCard).getByText("10点")).toBeInTheDocument();
-    expect(within(dividendYieldCard).getByText(/9\s*\/\s*10/)).toBeInTheDocument();
+    expect(
+      within(dividendYieldCard).getByText(/9\s*\/\s*10/),
+    ).toBeInTheDocument();
     expect(
       within(dividendYieldCard).getByText(/配当利回りスコアを表示します/),
     ).toBeInTheDocument();
