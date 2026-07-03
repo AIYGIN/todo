@@ -55,6 +55,9 @@ export function DividendAnalysisDetail({
 
 function ScoreSummaryCard({ detail }: { detail: DividendAnalysisDetailData }) {
   const tone = toTone(detail.safetyLabel);
+  const donutItems = detail.scoreBreakdown
+    ? toDonutItems(detail.scoreBreakdown)
+    : [];
 
   return (
     <section className={scoreCardClass} aria-label="配当安全性スコア">
@@ -74,32 +77,34 @@ function ScoreSummaryCard({ detail }: { detail: DividendAnalysisDetailData }) {
         </span>
       </p>
       <StatusBadge tone={tone}>{detail.judgement}</StatusBadge>
-      <div className={breakdownClass}>
-        <h4 className={sectionTitleClass}>スコア内訳</h4>
-        <div className={breakdownBodyClass}>
-          <div className={chartWrapClass}>
-            <InvestmentDonutChart
-              items={toDonutItems(detail)}
-              label="スコア内訳"
-              size="sm"
-            />
+      {detail.scoreBreakdown ? (
+        <div className={breakdownClass}>
+          <h4 className={sectionTitleClass}>スコア内訳</h4>
+          <div className={breakdownBodyClass}>
+            <div className={chartWrapClass}>
+              <InvestmentDonutChart
+                items={donutItems}
+                label="スコア内訳"
+                size="sm"
+              />
+            </div>
+            <dl className={legendClass}>
+              {donutItems.map((item) => (
+                <div className={legendRowClass} key={item.name}>
+                  <span
+                    className={legendSwatchClass}
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <dt className={legendLabelClass}>{item.name}</dt>
+                  <dd className={legendValueClass}>
+                    {formatNumber(item.weight)}%
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
-          <dl className={legendClass}>
-            {toDonutItems(detail).map((item) => (
-              <div className={legendRowClass} key={item.name}>
-                <span
-                  className={legendSwatchClass}
-                  style={{ backgroundColor: item.color }}
-                />
-                <dt className={legendLabelClass}>{item.name}</dt>
-                <dd className={legendValueClass}>
-                  {formatNumber(item.weight)}%
-                </dd>
-              </div>
-            ))}
-          </dl>
         </div>
-      </div>
+      ) : null}
     </section>
   );
 }
@@ -216,42 +221,44 @@ function formatNumber(value: number) {
   }).format(value);
 }
 
-function toDonutItems(detail: DividendAnalysisDetailData) {
+function toDonutItems(
+  scoreBreakdown: NonNullable<DividendAnalysisDetailData["scoreBreakdown"]>,
+) {
   const entries = [
     [
       "FCF",
-      detail.scoreBreakdown.fcf.score ?? 0,
-      detail.scoreBreakdown.fcf.maxScore,
+      scoreBreakdown.fcf.score ?? 0,
+      scoreBreakdown.fcf.maxScore,
       "#22c55e",
     ],
     [
       "減配履歴",
-      detail.scoreBreakdown.dividendCutHistory.score,
-      detail.scoreBreakdown.dividendCutHistory.maxScore,
+      scoreBreakdown.dividendCutHistory.score,
+      scoreBreakdown.dividendCutHistory.maxScore,
       "#16a34a",
     ],
     [
       "増配率",
-      detail.scoreBreakdown.dividendGrowth.score,
-      detail.scoreBreakdown.dividendGrowth.maxScore,
+      scoreBreakdown.dividendGrowth.score,
+      scoreBreakdown.dividendGrowth.maxScore,
       "#f59e0b",
     ],
     [
       "配当性向",
-      detail.scoreBreakdown.payoutRatio.score,
-      detail.scoreBreakdown.payoutRatio.maxScore,
+      scoreBreakdown.payoutRatio.score,
+      scoreBreakdown.payoutRatio.maxScore,
       "#8b5cf6",
     ],
     [
       "利回り",
-      detail.scoreBreakdown.dividendYield.score,
-      detail.scoreBreakdown.dividendYield.maxScore,
+      scoreBreakdown.dividendYield.score,
+      scoreBreakdown.dividendYield.maxScore,
       "#60a5fa",
     ],
     [
       "財務指標",
-      detail.scoreBreakdown.financialMetrics.score,
-      detail.scoreBreakdown.financialMetrics.maxScore,
+      scoreBreakdown.financialMetrics.score,
+      scoreBreakdown.financialMetrics.maxScore,
       "#ef4444",
     ],
   ] as const;

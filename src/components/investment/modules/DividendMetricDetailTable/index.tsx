@@ -13,6 +13,10 @@ export function DividendMetricDetailTable({
   metrics,
   scoreBreakdown,
 }: DividendMetricDetailTableProps) {
+  if (!scoreBreakdown) {
+    return <RawMetricTable metrics={metrics} />;
+  }
+
   const rows = [
     {
       index: 1,
@@ -25,7 +29,6 @@ export function DividendMetricDetailTable({
       score: scoreBreakdown.fcf.score,
       maxScore: scoreBreakdown.fcf.maxScore,
       detail: scoreBreakdown.fcf.reason,
-      visual: "bars",
     },
     {
       index: 2,
@@ -35,27 +38,24 @@ export function DividendMetricDetailTable({
       score: scoreBreakdown.dividendCutHistory.score,
       maxScore: scoreBreakdown.dividendCutHistory.maxScore,
       detail: scoreBreakdown.dividendCutHistory.reason,
-      visual: "dots",
     },
     {
       index: 3,
       label: "増配率（年平均）",
       allocation: scoreBreakdown.dividendGrowth.maxScore,
-      value: `${formatNumber(metrics.dividendGrowthRate10y)}%`,
+      value: formatOptionalNumber(metrics.dividendGrowthRate10y, "%"),
       score: scoreBreakdown.dividendGrowth.score,
       maxScore: scoreBreakdown.dividendGrowth.maxScore,
       detail: scoreBreakdown.dividendGrowth.reason,
-      visual: "line",
     },
     {
       index: 4,
       label: "配当性向",
       allocation: scoreBreakdown.payoutRatio.maxScore,
-      value: `${formatNumber(metrics.payoutRatio)}%`,
+      value: formatOptionalNumber(metrics.payoutRatio, "%"),
       score: scoreBreakdown.payoutRatio.score,
       maxScore: scoreBreakdown.payoutRatio.maxScore,
       detail: scoreBreakdown.payoutRatio.reason,
-      visual: "gauge",
     },
     {
       index: 5,
@@ -65,84 +65,71 @@ export function DividendMetricDetailTable({
       score: scoreBreakdown.dividendYield.score,
       maxScore: scoreBreakdown.dividendYield.maxScore,
       detail: scoreBreakdown.dividendYield.reason,
-      visual: "gauge",
     },
     {
       index: 6,
       label: "財務指標\n(PER / PBR / ROE)",
       allocation: scoreBreakdown.financialMetrics.maxScore,
-      value: `PER ${formatNumber(metrics.per)} / PBR ${formatNumber(
+      value: `PER ${formatOptionalNumber(metrics.per)} / PBR ${formatOptionalNumber(
         metrics.pbr,
-      )} / ROE ${formatNumber(metrics.roe)}%`,
+      )} / ROE ${formatOptionalNumber(metrics.roe, "%")}`,
       score: scoreBreakdown.financialMetrics.score,
       maxScore: scoreBreakdown.financialMetrics.maxScore,
       detail: scoreBreakdown.financialMetrics.reason,
-      visual: "line",
     },
   ];
 
   return (
-    <div className={css({ overflowX: "auto" })}>
-      <table className={tableClass}>
-        <thead>
-          <tr>
-            {["項目", "配点", "評価・判定", "得点", "詳細", ""].map(
-              (header) => (
-                <th className={headerCellClass} key={header} scope="col">
-                  {header}
-                </th>
-              ),
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const tone = getScoreTone(row.score, row.maxScore);
+    <div className={metricListClass}>
+      {rows.map((row) => {
+        const tone = getScoreTone(row.score, row.maxScore);
 
-            return (
-              <tr className={rowClass} key={row.label}>
-                <td className={metricCellClass}>
-                  <span className={cx(indexClass, toneTextClass[tone])}>
-                    {row.index}
-                  </span>
-                  <span>
-                    {row.label.split("\n").map((line) => (
-                      <span className={css({ display: "block" })} key={line}>
-                        {line}
-                      </span>
-                    ))}
-                  </span>
-                </td>
-                <td className={bodyCellClass}>{row.allocation}点</td>
-                <td className={bodyCellClass}>
-                  <StatusBadge tone={tone}>
-                    評価 {getScoreLabel(row.score, row.maxScore)}
-                  </StatusBadge>
-                </td>
-                <td className={cx(bodyCellClass, toneTextClass[tone])}>
-                  得点 {formatScore(row.score)} / {row.maxScore}
-                </td>
-                <td className={detailCellClass}>
-                  <span
-                    className={css({
-                      color: "investment-text",
-                      fontWeight: "900",
-                    })}
-                  >
-                    {row.value}
-                  </span>
-                  <span className={css({ display: "block", mt: "1" })}>
-                    詳細: {row.detail}
-                  </span>
-                </td>
-                <td className={visualCellClass}>
-                  <MiniVisual kind={row.visual} tone={tone} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+        return (
+          <article
+            aria-label={row.label.replace("\n", " ")}
+            className={metricCardClass}
+            key={row.label}
+          >
+            <div className={metricCardHeaderClass}>
+              <div className={metricNameClass}>
+                <span className={cx(indexClass, toneTextClass[tone])}>
+                  {row.index}
+                </span>
+                <h4 className={metricTitleClass}>
+                  {row.label.split("\n").map((line) => (
+                    <span className={css({ display: "block" })} key={line}>
+                      {line}
+                    </span>
+                  ))}
+                </h4>
+              </div>
+              <StatusBadge tone={tone}>
+                評価 {getScoreLabel(row.score, row.maxScore)}
+              </StatusBadge>
+            </div>
+            <dl className={metricFactsClass}>
+              <div>
+                <dt className={metricTermClass}>配点</dt>
+                <dd className={metricValueClass}>{row.allocation}点</dd>
+              </div>
+              <div>
+                <dt className={metricTermClass}>得点</dt>
+                <dd className={cx(metricValueClass, toneTextClass[tone])}>
+                  {formatScore(row.score)} / {row.maxScore}
+                </dd>
+              </div>
+              <div>
+                <dt className={metricTermClass}>値</dt>
+                <dd className={metricValueClass}>{row.value}</dd>
+              </div>
+              <div className={metricDetailFactClass}>
+                <dt className={metricTermClass}>詳細</dt>
+                <dd className={metricDetailValueClass}>{row.detail}</dd>
+              </div>
+            </dl>
+          </article>
+        );
+      })}
       <p
         className={css({
           color: "investment-muted",
@@ -157,93 +144,93 @@ export function DividendMetricDetailTable({
   );
 }
 
-function MiniVisual({ kind, tone }: { kind: string; tone: InvestmentTone }) {
-  if (kind === "dots") {
-    return (
-      <span className={miniDotsClass}>
-        {[0, 1, 2, 3].map((dot) => (
-          <span className={cx(dotClass, toneBgClass[tone])} key={dot} />
-        ))}
-      </span>
-    );
-  }
-
-  if (kind === "bars") {
-    return (
-      <span className={miniBarsClass}>
-        {[18, 28, 38, 48].map((height) => (
-          <span
-            className={cx(barClass, toneBgClass[tone])}
-            key={height}
-            style={{ height }}
-          />
-        ))}
-      </span>
-    );
-  }
-
-  if (kind === "gauge") {
-    return (
-      <span className={gaugeClass}>
-        <span className={cx(gaugeFillClass, toneBgClass[tone])} />
-        <span className={cx(gaugeKnobClass, toneBgClass[tone])} />
-      </span>
-    );
-  }
+function RawMetricTable({
+  metrics,
+}: {
+  metrics: DividendAnalysisDetail["metrics"];
+}) {
+  const rows = [
+    {
+      label: "配当利回り",
+      value: formatOptionalNumber(metrics.dividendYield, "%"),
+    },
+    {
+      label: "配当性向",
+      value: formatOptionalNumber(metrics.payoutRatio, "%"),
+    },
+    {
+      label: "PER",
+      value: formatOptionalNumber(metrics.per, "倍"),
+    },
+    {
+      label: "PBR",
+      value: formatOptionalNumber(metrics.pbr, "倍"),
+    },
+    {
+      label: "ROE",
+      value: formatOptionalNumber(metrics.roe, "%"),
+    },
+    {
+      label: "自己資本比率",
+      value: formatOptionalNumber(metrics.equityRatio, "%"),
+    },
+    {
+      label: "FCF",
+      value: metrics.fcf === null ? "N/A" : formatCurrency(metrics.fcf),
+    },
+    {
+      label: "FCFステータス",
+      value: metrics.freeCashFlowStatus,
+    },
+  ];
 
   return (
-    <span className={miniLineClass}>
-      {[0, 1, 2, 3].map((dot) => (
-        <span
-          className={cx(lineDotClass, toneBgClass[tone])}
-          key={dot}
-          style={{ transform: `translateY(${dot % 2 === 0 ? 8 : 0}px)` }}
-        />
+    <div className={rawMetricListClass}>
+      {rows.map((row) => (
+        <article
+          aria-label={row.label}
+          className={rawMetricRowClass}
+          key={row.label}
+        >
+          <span className={metricTermClass}>{row.label}</span>
+          <strong className={rawMetricValueClass}>{row.value}</strong>
+        </article>
       ))}
-    </span>
+    </div>
   );
 }
 
-const tableClass = css({
-  borderCollapse: "collapse",
-  color: "investment-text",
-  fontSize: "sm",
-  minW: "720px",
-  w: "full",
+const metricListClass = css({
+  display: "grid",
+  gap: "3",
+  minW: 0,
 });
 
-const headerCellClass = css({
-  borderBottom: "1px solid token(colors.investment-border)",
-  color: "investment-muted",
-  fontSize: "xs",
-  fontWeight: "800",
-  pb: "3",
-  px: "3",
-  textAlign: "left",
-  whiteSpace: "nowrap",
+const metricCardClass = css({
+  bg: "white",
+  border: "1px solid token(colors.investment-border-soft)",
+  borderRadius: "8px",
+  display: "grid",
+  gap: "3",
+  minW: 0,
+  p: "3",
 });
 
-const rowClass = css({
-  borderBottom: "1px solid token(colors.investment-border-soft)",
+const metricCardHeaderClass = css({
+  alignItems: "flex-start",
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "2",
+  justifyContent: "space-between",
+  minW: 0,
 });
 
-const bodyCellClass = css({
-  fontWeight: "800",
-  px: "3",
-  py: "3",
-  verticalAlign: "middle",
-  whiteSpace: "nowrap",
+const metricNameClass = css({
+  alignItems: "center",
+  display: "flex",
+  gap: "2",
+  minW: 0,
 });
-
-const metricCellClass = cx(
-  bodyCellClass,
-  css({
-    alignItems: "center",
-    display: "flex",
-    gap: "3",
-    minW: "150px",
-  }),
-);
 
 const indexClass = css({
   alignItems: "center",
@@ -258,86 +245,84 @@ const indexClass = css({
   w: "6",
 });
 
-const detailCellClass = cx(
-  bodyCellClass,
-  css({
-    color: "investment-muted",
-    lineHeight: "1.45",
-    minW: "210px",
-    whiteSpace: "normal",
-  }),
-);
+const metricTitleClass = css({
+  color: "investment-text",
+  fontSize: "sm",
+  fontWeight: "900",
+  lineHeight: "1.35",
+  m: 0,
+  overflowWrap: "anywhere",
+});
 
-const visualCellClass = cx(bodyCellClass, css({ minW: "92px" }));
-
-const miniBarsClass = css({
-  alignItems: "end",
-  display: "inline-grid",
+const metricFactsClass = css({
+  display: "grid",
   gap: "2",
-  gridTemplateColumns: "repeat(4, 8px)",
-  h: "48px",
+  gridTemplateColumns: {
+    base: "1fr",
+    sm: "repeat(2, minmax(0, 1fr))",
+  },
+  m: 0,
+  minW: 0,
 });
 
-const barClass = css({
-  borderRadius: "2px 2px 0 0",
+const metricDetailFactClass = css({
+  gridColumn: { base: "auto", sm: "1 / -1" },
+  minW: 0,
+});
+
+const metricTermClass = css({
+  color: "investment-muted",
   display: "block",
-  opacity: 0.65,
-  w: "8px",
+  fontSize: "xs",
+  fontWeight: "800",
+  lineHeight: "1.4",
 });
 
-const miniDotsClass = css({
-  alignItems: "center",
-  display: "inline-flex",
+const metricValueClass = css({
+  color: "investment-text",
+  fontSize: "sm",
+  fontWeight: "900",
+  lineHeight: "1.45",
+  m: 0,
+  overflowWrap: "anywhere",
+});
+
+const metricDetailValueClass = css({
+  color: "investment-muted",
+  fontSize: "sm",
+  fontWeight: "800",
+  lineHeight: "1.55",
+  m: 0,
+  overflowWrap: "anywhere",
+});
+
+const rawMetricListClass = css({
+  bg: "white",
+  border: "1px solid token(colors.investment-border-soft)",
+  borderRadius: "8px",
+  display: "grid",
+  minW: 0,
+});
+
+const rawMetricRowClass = css({
+  alignItems: "start",
+  borderBottom: "1px solid token(colors.investment-border-soft)",
+  display: "grid",
   gap: "2",
+  gridTemplateColumns: "minmax(96px, 0.9fr) minmax(0, 1.1fr)",
+  p: "3",
+  _last: {
+    borderBottom: "0",
+  },
 });
 
-const dotClass = css({
-  borderRadius: "999px",
-  display: "block",
-  h: "8px",
-  w: "8px",
-});
-
-const miniLineClass = css({
-  alignItems: "center",
-  display: "inline-flex",
-  gap: "3",
-  minH: "34px",
-});
-
-const lineDotClass = css({
-  borderRadius: "999px",
-  display: "block",
-  h: "7px",
-  w: "7px",
-});
-
-const gaugeClass = css({
-  bg: "#e9eef6",
-  borderRadius: "999px",
-  display: "inline-block",
-  h: "8px",
-  position: "relative",
-  w: "72px",
-});
-
-const gaugeFillClass = css({
-  borderRadius: "999px",
-  display: "block",
-  h: "full",
-  w: "70%",
-});
-
-const gaugeKnobClass = css({
-  border: "2px solid white",
-  borderRadius: "999px",
-  boxShadow: "0 0 0 1px rgba(15, 23, 42, 0.08)",
-  display: "block",
-  h: "12px",
-  left: "66%",
-  position: "absolute",
-  top: "-2px",
-  w: "12px",
+const rawMetricValueClass = css({
+  color: "investment-text",
+  fontSize: "sm",
+  fontWeight: "900",
+  lineHeight: "1.45",
+  overflowWrap: "anywhere",
+  textAlign: "right",
 });
 
 const toneTextClass: Record<InvestmentTone, string> = {
@@ -347,15 +332,6 @@ const toneTextClass: Record<InvestmentTone, string> = {
   warning: css({ color: "investment-orange" }),
   danger: css({ color: "investment-red" }),
   neutral: css({ color: "investment-blue" }),
-};
-
-const toneBgClass: Record<InvestmentTone, string> = {
-  safe: css({ bg: "investment-green" }),
-  good: css({ bg: "investment-green" }),
-  watch: css({ bg: "investment-orange" }),
-  warning: css({ bg: "investment-orange" }),
-  danger: css({ bg: "investment-red" }),
-  neutral: css({ bg: "investment-blue" }),
 };
 
 function formatNumber(value: number) {
@@ -369,6 +345,14 @@ function formatCurrency(value: number) {
   return `${new Intl.NumberFormat("ja-JP", {
     maximumFractionDigits: 0,
   }).format(value)}円`;
+}
+
+function formatOptionalNumber(value: unknown, suffix = "") {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return "N/A";
+  }
+
+  return `${formatNumber(value)}${suffix}`;
 }
 
 function formatScore(score: number | null) {
