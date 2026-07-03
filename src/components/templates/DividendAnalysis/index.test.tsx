@@ -545,11 +545,11 @@ describe("DividendAnalysisPage", () => {
     expect(screen.getByText("FCF")).toBeInTheDocument();
     expect(screen.getByText("120,000,000,000円")).toBeInTheDocument();
     expect(screen.getAllByText("評価 良好").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("得点 15 / 20").length).toBeGreaterThan(0);
-    expect(screen.getByText(/詳細: FCFを確認できます/)).toBeInTheDocument();
+    expect(screen.getAllByText(/15\s*\/\s*20/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/FCFを確認できます/)).toBeInTheDocument();
     expect(screen.getByText("配当利回り")).toBeInTheDocument();
     expect(
-      screen.getByText(/詳細: 配当利回りスコアを表示します/),
+      screen.getByText(/配当利回りスコアを表示します/),
     ).toBeInTheDocument();
   });
 
@@ -569,19 +569,17 @@ describe("DividendAnalysisPage", () => {
     });
 
     expect(within(payoutRatioCard).getByText("15点")).toBeInTheDocument();
+    expect(within(payoutRatioCard).getByText(/4\s*\/\s*15/)).toBeInTheDocument();
     expect(
-      within(payoutRatioCard).getByText("得点 4 / 15"),
+      within(payoutRatioCard).getByText(/配当性向スコアを表示します/),
     ).toBeInTheDocument();
-    expect(
-      within(payoutRatioCard).getByText(/詳細: 配当性向スコアを表示します/),
-    ).toBeInTheDocument();
+    expect(within(payoutRatioCard).getByText("得点")).toBeInTheDocument();
 
     expect(within(dividendYieldCard).getByText("10点")).toBeInTheDocument();
+    expect(within(dividendYieldCard).getByText(/9\s*\/\s*10/)).toBeInTheDocument();
     expect(
-      within(dividendYieldCard).getByText("得点 9 / 10"),
+      within(dividendYieldCard).getByText(/配当利回りスコアを表示します/),
     ).toBeInTheDocument();
-    expect(
-      within(dividendYieldCard).getByText(/詳細: 配当利回りスコアを表示します/),
-    ).toBeInTheDocument();
+    expect(within(dividendYieldCard).getByText("得点")).toBeInTheDocument();
   });
 });
