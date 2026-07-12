@@ -18,6 +18,7 @@ import type {
 } from 'msw';
 
 import type {
+  GetEnterpriseAiSummaryResponseDto,
   GetEnterpriseDividendAnalysisResponseDto,
   GetEnterpriseQuantsInfoResponseDto
 } from '../model';
@@ -26,6 +27,8 @@ import type {
 export const getEnterprisesControllerGetQuantsInfoResponseMock = (overrideResponse: Partial<Extract<GetEnterpriseQuantsInfoResponseDto, object>> = {}): GetEnterpriseQuantsInfoResponseDto => ({scoreVersion: faker.string.alpha({length: {min: 10, max: 20}}), asOf: faker.date.past().toISOString().slice(0, 10), sort: faker.helpers.arrayElement(['dividendScore','rank','dividendYield','payoutRatio','per','pbr','roe','equityRatio'] as const), order: faker.helpers.arrayElement(['asc','desc'] as const), items: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({rank: faker.number.float({min: 1, fractionDigits: 2}), symbolId: faker.string.alpha({length: {min: 10, max: 20}}), companyName: faker.string.alpha({length: {min: 10, max: 20}}), market: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), sector: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), dividendScore: faker.number.float({min: 0, max: 100, fractionDigits: 2}), dividendYield: faker.number.float({fractionDigits: 2}), payoutRatio: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), per: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), pbr: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), roe: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), equityRatio: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), freeCashFlowStatus: faker.helpers.arrayElement(['AVAILABLE','NOT_APPLICABLE','MISSING'] as const), missingFields: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), warnings: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}})))})), ...overrideResponse})
 
 export const getEnterprisesControllerGetDividendAnalysisResponseMock = (overrideResponse: Partial<Extract<GetEnterpriseDividendAnalysisResponseDto, object>> = {}): GetEnterpriseDividendAnalysisResponseDto => ({symbolId: faker.string.alpha({length: {min: 10, max: 20}}), companyName: faker.string.alpha({length: {min: 10, max: 20}}), scoreVersion: faker.string.alpha({length: {min: 10, max: 20}}), asOf: faker.date.past().toISOString().slice(0, 10), rank: faker.number.float({min: 1, fractionDigits: 2}), dividendScore: faker.number.float({min: 0, max: 100, fractionDigits: 2}), metrics: {...{dividendYield: faker.number.float({fractionDigits: 2}), payoutRatio: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), per: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), pbr: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), roe: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), equityRatio: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), freeCashFlow: faker.helpers.arrayElement([faker.helpers.arrayElement([null,]), undefined]), freeCashFlowStatus: faker.helpers.arrayElement(['AVAILABLE','NOT_APPLICABLE','MISSING'] as const)},}, analysis: {...{summary: faker.string.alpha({length: {min: 10, max: 20}}), positiveFactors: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), riskFactors: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}})))},}, missingFields: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), warnings: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), ...overrideResponse})
+
+export const getEnterprisesControllerGetAiSummaryResponseMock = (overrideResponse: Partial<Extract<GetEnterpriseAiSummaryResponseDto, object>> = {}): GetEnterpriseAiSummaryResponseDto => ({symbolId: faker.string.alpha({length: {min: 10, max: 20}}), companyName: faker.string.alpha({length: {min: 10, max: 20}}), companyCode: faker.string.alpha({length: {min: 10, max: 20}}), tweetSummary: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), tweetSentimentScore: faker.helpers.arrayElement([faker.number.float({min: -1, max: 1, fractionDigits: 2}), null]), commentSummary: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), commentSentimentScore: faker.helpers.arrayElement([faker.number.float({min: -1, max: 1, fractionDigits: 2}), null]), investmentHints: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), investmentIssues: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), ...overrideResponse})
 
 
 export const getEnterprisesControllerGetQuantsInfoMockHandler = (overrideResponse?: GetEnterpriseQuantsInfoResponseDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<GetEnterpriseQuantsInfoResponseDto> | GetEnterpriseQuantsInfoResponseDto), options?: RequestHandlerOptions) => {
@@ -51,7 +54,20 @@ export const getEnterprisesControllerGetDividendAnalysisMockHandler = (overrideR
       })
   }, options)
 }
+
+export const getEnterprisesControllerGetAiSummaryMockHandler = (overrideResponse?: GetEnterpriseAiSummaryResponseDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<GetEnterpriseAiSummaryResponseDto> | GetEnterpriseAiSummaryResponseDto), options?: RequestHandlerOptions) => {
+  return http.get('*/enterprises/:symbolId/aiSummary', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getEnterprisesControllerGetAiSummaryResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
 export const getEnterprisesMock = () => [
   getEnterprisesControllerGetQuantsInfoMockHandler(),
-  getEnterprisesControllerGetDividendAnalysisMockHandler()
+  getEnterprisesControllerGetDividendAnalysisMockHandler(),
+  getEnterprisesControllerGetAiSummaryMockHandler()
 ]

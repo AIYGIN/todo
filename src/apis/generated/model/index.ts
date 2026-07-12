@@ -32,6 +32,7 @@ export * from './enterprisesControllerGetQuantsInfoOrder';
 export * from './enterprisesControllerGetQuantsInfoParams';
 export * from './enterprisesControllerGetQuantsInfoSort';
 export * from './errorResponseSchema';
+export * from './getEnterpriseAiSummaryResponseDto';
 export * from './getEnterpriseDividendAnalysisResponseDto';
 export * from './getEnterpriseQuantsInfoResponseDto';
 export * from './getEnterpriseQuantsInfoResponseDtoOrder';

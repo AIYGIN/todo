@@ -9,6 +9,7 @@ import type {
   EnterprisesControllerGetDividendAnalysisParams,
   EnterprisesControllerGetQuantsInfoParams,
   ErrorResponseSchema,
+  GetEnterpriseAiSummaryResponseDto,
   GetEnterpriseDividendAnalysisResponseDto,
   GetEnterpriseQuantsInfoResponseDto
 } from '../model';
@@ -133,6 +134,64 @@ export const enterprisesControllerGetDividendAnalysis = async (symbolId: string,
     params?: EnterprisesControllerGetDividendAnalysisParams, options?: RequestInit): Promise<enterprisesControllerGetDividendAnalysisResponse> => {
 
   return request<enterprisesControllerGetDividendAnalysisResponse>(getEnterprisesControllerGetDividendAnalysisUrl(symbolId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export type enterprisesControllerGetAiSummaryResponse200 = {
+  data: GetEnterpriseAiSummaryResponseDto
+  status: 200
+}
+
+export type enterprisesControllerGetAiSummaryResponse400 = {
+  data: ErrorResponseSchema
+  status: 400
+}
+
+export type enterprisesControllerGetAiSummaryResponse401 = {
+  data: ErrorResponseSchema
+  status: 401
+}
+
+export type enterprisesControllerGetAiSummaryResponse404 = {
+  data: ErrorResponseSchema
+  status: 404
+}
+
+export type enterprisesControllerGetAiSummaryResponse500 = {
+  data: ErrorResponseSchema
+  status: 500
+}
+
+export type enterprisesControllerGetAiSummaryResponseSuccess = (enterprisesControllerGetAiSummaryResponse200) & {
+  headers: Headers;
+};
+export type enterprisesControllerGetAiSummaryResponseError = (enterprisesControllerGetAiSummaryResponse400 | enterprisesControllerGetAiSummaryResponse401 | enterprisesControllerGetAiSummaryResponse404 | enterprisesControllerGetAiSummaryResponse500) & {
+  headers: Headers;
+};
+
+export type enterprisesControllerGetAiSummaryResponse = (enterprisesControllerGetAiSummaryResponseSuccess | enterprisesControllerGetAiSummaryResponseError)
+
+export const getEnterprisesControllerGetAiSummaryUrl = (symbolId: string,) => {
+
+
+
+
+  return `/enterprises/${symbolId}/aiSummary`
+}
+
+/**
+ * 高配当分析画面で表示するX投稿・コメント由来のAI要約を返す。画面 API リクエストでは外部データ取得先の指定を受け取らず、内部運用データは公開契約に含めない。
+ * @summary 指定銘柄のAI要約を取得する
+ */
+export const enterprisesControllerGetAiSummary = async (symbolId: string, options?: RequestInit): Promise<enterprisesControllerGetAiSummaryResponse> => {
+
+  return request<enterprisesControllerGetAiSummaryResponse>(getEnterprisesControllerGetAiSummaryUrl(symbolId),
   {
     ...options,
     method: 'GET'
